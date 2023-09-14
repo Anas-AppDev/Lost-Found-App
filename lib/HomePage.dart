@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:lostfound/LoginPage.dart';
+import 'package:lostfound/Login2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   var auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: ElevatedButton(onPressed: (){
           auth.signOut();
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginPage()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
       },
           child: Text("log out"),
       ),),

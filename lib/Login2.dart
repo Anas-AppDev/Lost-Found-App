@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lostfound/HomePage.dart';
 import 'package:lostfound/Signup2.dart';
-
-import 'SignupPage.dart';
 import 'ToastUtil.dart';
 
 class Login2 extends StatefulWidget {
