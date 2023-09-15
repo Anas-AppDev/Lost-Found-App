@@ -21,8 +21,6 @@ class _Forgot2State extends State<Forgot2> {
 
   var auth = FirebaseAuth.instance;
 
-  late Timer timer;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

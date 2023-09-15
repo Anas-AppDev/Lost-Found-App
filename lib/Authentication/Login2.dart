@@ -25,8 +25,6 @@ class _Login2State extends State<Login2> {
   var auth = FirebaseAuth.instance;
   var real = FirebaseDatabase.instance.ref("LostFound");
 
-  late Timer timer;
-
   @override
   void dispose() {
     super.dispose();
