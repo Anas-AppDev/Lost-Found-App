@@ -5,9 +5,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lostfound/Authentication/Forgot2.dart';
 import 'package:lostfound/HomePage.dart';
-import 'package:lostfound/Signup2.dart';
-import 'ToastUtil.dart';
+import 'package:lostfound/Authentication/Signup2.dart';
+import '../ToastUtil.dart';
 
 class Login2 extends StatefulWidget {
   const Login2({super.key});
@@ -89,13 +90,13 @@ class _Login2State extends State<Login2> {
                         keyboardType: TextInputType.text,
                         controller: passCtrl,
                         decoration: InputDecoration(
-                          hintText: "Enter your CU Mail",
+                          hintText: "Enter password",
                           prefixIcon: Icon(CupertinoIcons.lock),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        maxLength: 6,
+                        maxLength: 15,
                         maxLines: 1,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -164,7 +165,7 @@ class _Login2State extends State<Login2> {
                 ),
                 TextButton(
                     onPressed: () {
-                      // Navigator.push(context, MaterialPageRoute(builder: (context)=> ))
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Forgot2()));
 
                     },
                     child: Text("Forgot Pass?")),

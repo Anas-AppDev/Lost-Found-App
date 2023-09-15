@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:lostfound/Login2.dart';
+import 'package:lostfound/Authentication/Login2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

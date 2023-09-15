@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lostfound/Login2.dart';
+import 'package:lostfound/Authentication/Login2.dart';
 
-import 'ToastUtil.dart';
+import '../ToastUtil.dart';
 
 class Signup2 extends StatefulWidget {
   const Signup2({super.key});
@@ -77,17 +77,17 @@ class _Signup2State extends State<Signup2> {
                     keyboardType: TextInputType.text,
                     controller: passCtrl,
                     decoration: InputDecoration(
-                      hintText: "Enter your CU Mail",
+                      hintText: "Enter password",
                       prefixIcon: Icon(CupertinoIcons.lock),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    maxLength: 6,
+                    maxLength: 15,
                     maxLines: 1,
                     validator: (value){
                       if (value!.isEmpty){
-                        return "Enter Password (6-digit)";
+                        return "Enter Password";
                       }
                       return null;
                     },
@@ -115,7 +115,7 @@ class _Signup2State extends State<Signup2> {
                         });
 
                         // Start a timer to re-enable the button after a certain duration (e.g., 60 seconds)
-                        timer = Timer(Duration(seconds: 60), () {
+                        Timer(Duration(seconds: 60), () {
                           setState(() {
                             isResendButtonEnabled = true;
                           });
@@ -125,7 +125,7 @@ class _Signup2State extends State<Signup2> {
                         ToastUtil().toast("Verification email sent. Please verify your email before logging in.");
 
                         // Delay navigation to allow time for the user to see the toast message
-                        Timer.periodic(Duration(seconds: 3), (timer) async{
+                        timer = Timer.periodic(Duration(seconds: 3), (timer) async{
                           await auth.currentUser!.reload();
                           if (auth.currentUser!.emailVerified){
                             await real.child('VerifiedUsers').set({ auth.currentUser!.uid : auth.currentUser!.email.toString()});

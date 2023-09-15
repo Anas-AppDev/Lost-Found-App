@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lostfound/Login2.dart';
+import 'package:lostfound/Authentication/Login2.dart';
 
 
 class Splash2Route{
