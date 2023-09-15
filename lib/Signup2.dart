@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lostfound/Login2.dart';
@@ -21,6 +22,7 @@ class _Signup2State extends State<Signup2> {
   var passCtrl = TextEditingController();
 
   var auth = FirebaseAuth.instance;
+  var real = FirebaseDatabase.instance.ref("LostFound");
 
   late Timer timer;
   bool isResendButtonEnabled = true;
@@ -100,7 +102,7 @@ class _Signup2State extends State<Signup2> {
                     try {
                       print("aaa ${auth.currentUser}");
                       final userCredential = await auth.createUserWithEmailAndPassword(
-                        email: cumailCtrl.text.trim(),
+                        email: cumailCtrl.text.trim().toLowerCase(),
                         password: passCtrl.text.trim(),
                       );
                       print("bb ${auth.currentUser}");
@@ -126,6 +128,7 @@ class _Signup2State extends State<Signup2> {
                         Timer.periodic(Duration(seconds: 3), (timer) async{
                           await auth.currentUser!.reload();
                           if (auth.currentUser!.emailVerified){
+                            await real.child('VerifiedUsers').set({ auth.currentUser!.uid : auth.currentUser!.email.toString()});
                             timer.cancel();
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
                             ToastUtil().toast("CU Mail verified");
