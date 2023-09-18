@@ -1,36 +1,49 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lostfound/Authentication/Login2.dart';
+import 'package:lostfound/Authentication/Login.dart';
 
 import '../ToastUtil.dart';
 
-class Signup2 extends StatefulWidget {
-  const Signup2({super.key});
+class SignupA extends StatefulWidget {
+  const SignupA({super.key});
 
   @override
-  State<Signup2> createState() => _Signup2State();
+  State<SignupA> createState() => _SignupAState();
 }
 
-class _Signup2State extends State<Signup2> {
+class _SignupAState extends State<SignupA> {
 
   var formKey = GlobalKey<FormState>();
   var cumailCtrl = TextEditingController();
   var passCtrl = TextEditingController();
+  var nameCtrl = TextEditingController();
+  var cabinCtrl = TextEditingController();
 
   var auth = FirebaseAuth.instance;
   var real = FirebaseDatabase.instance.ref("LostFound");
+  var firestore = FirebaseFirestore.instance.collection("LostFound");
 
   late Timer timer;
   bool isResendButtonEnabled = true;
 
+  String? blockListSelected = null;
+  var blockList = [
+    'D1',
+    'B3',
+    'B1',
+    'B4',
+    'B6',
+  ];
+
   @override
   void dispose() {
     super.dispose();
-    timer.cancel();
+    // timer.cancel();
   }
 
   @override
@@ -52,6 +65,26 @@ class _Signup2State extends State<Signup2> {
               Form(child: Column(
                 children: [
                   TextFormField(
+                    keyboardType: TextInputType.text,
+                    controller: nameCtrl,
+                    decoration: InputDecoration(
+                      hintText: "Enter name",
+                      prefixIcon: Icon(CupertinoIcons.person_alt_circle),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLength: 20,
+                    maxLines: 1,
+                    validator: (value){
+                      if (value!.isEmpty){
+                        return "Enter Name";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20,),
+                  TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     controller: cumailCtrl,
                     decoration: InputDecoration(
@@ -66,7 +99,7 @@ class _Signup2State extends State<Signup2> {
                       if (value!.isEmpty){
                         return "Enter CU Mail Id";
                       }
-                      if (!(value.endsWith("@cuchd.in"))){
+                      if (!(value.endsWith("@gmail.com"))){
                         return "Enter CU Mail Id only";
                       }
                       return null;
@@ -78,7 +111,7 @@ class _Signup2State extends State<Signup2> {
                     controller: passCtrl,
                     decoration: InputDecoration(
                       hintText: "Enter password",
-                      prefixIcon: Icon(CupertinoIcons.lock),
+                      prefixIcon: Icon(CupertinoIcons.mail),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -87,7 +120,43 @@ class _Signup2State extends State<Signup2> {
                     maxLines: 1,
                     validator: (value){
                       if (value!.isEmpty){
-                        return "Enter Password";
+                        return "Enter password";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20,),
+                  DropdownButton(
+                    value: blockListSelected,
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    items: blockList.map((String items) {
+                      return DropdownMenuItem(
+                        value: items,
+                        child: Text(items),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        blockListSelected = newValue!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20,),
+                  TextFormField(
+                    keyboardType: TextInputType.text,
+                    controller: cabinCtrl,
+                    decoration: InputDecoration(
+                      hintText: "Enter cabin",
+                      prefixIcon: Icon(CupertinoIcons.cube_box),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLength: 5,
+                    maxLines: 1,
+                    validator: (value){
+                      if (value!.isEmpty){
+                        return "Enter Cabin no.";
                       }
                       return null;
                     },
@@ -128,9 +197,19 @@ class _Signup2State extends State<Signup2> {
                         timer = Timer.periodic(Duration(seconds: 3), (timer) async{
                           await auth.currentUser!.reload();
                           if (auth.currentUser!.emailVerified){
-                            await real.child('VerifiedUsers').set({ auth.currentUser!.uid : auth.currentUser!.email.toString()});
+
+                            firestore.doc('VerifiedUsers').collection("Admins").add({auth.currentUser!.uid : auth.currentUser!.email.toString()});
+                            firestore.doc("Users").collection("Admins").doc(auth.currentUser!.uid).collection("profile").doc(auth.currentUser!.uid).set(
+                                {
+                                  "name": nameCtrl.text,
+                                  "block": blockListSelected,
+                                  "cabin": cabinCtrl.text,
+                                  "eid": cumailCtrl.text.split("@")[0],
+                                }
+                            );
+
                             timer.cancel();
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
                             ToastUtil().toast("CU Mail verified");
                           }
                         });
@@ -173,7 +252,7 @@ class _Signup2State extends State<Signup2> {
                           if (auth.currentUser!.emailVerified){
                             print("cc ${auth.currentUser}");
                             timer.cancel();
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
                             ToastUtil().toast("CU Mail verified");
                           }
                         });
@@ -201,7 +280,7 @@ class _Signup2State extends State<Signup2> {
                 children: [
                   Text("Already have an account? "),
                   TextButton(onPressed: (){
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
                   }, child: Text("Login")),
                 ],
               ),

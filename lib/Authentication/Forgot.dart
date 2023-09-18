@@ -5,16 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lostfound/ToastUtil.dart';
 
-import 'Login2.dart';
+import 'Login.dart';
 
-class Forgot2 extends StatefulWidget {
-  const Forgot2({super.key});
+class Forgot extends StatefulWidget {
+  const Forgot({super.key});
 
   @override
-  State<Forgot2> createState() => _Forgot2State();
+  State<Forgot> createState() => _ForgotState();
 }
 
-class _Forgot2State extends State<Forgot2> {
+class _ForgotState extends State<Forgot> {
 
   var formKey = GlobalKey<FormState>();
   var cumailCtrl = TextEditingController();
@@ -52,7 +52,7 @@ class _Forgot2State extends State<Forgot2> {
                     if (value!.isEmpty) {
                       return "Enter CU Mail Id";
                     }
-                    if (!(value.endsWith("@cuchd.in"))) {
+                    if (!(value.endsWith("@gmail.com") || value.endsWith('@cuchd.in'))) {
                       return "Enter CU Mail Id only";
                     }
                     return null;
@@ -64,7 +64,7 @@ class _Forgot2State extends State<Forgot2> {
 
               auth.sendPasswordResetEmail(email: cumailCtrl.text.toLowerCase()).then((value){
                 ToastUtil().toast("Check your cumail");
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
               }).onError((error, stackTrace){
                 ToastUtil().toast(error.toString());
               });

@@ -43,7 +43,8 @@ dependencies:
   fluttertoast:
   firebase_database:
   image_picker:
-
+  #for Current Date
+  intl:
 dev_dependencies:
   flutter_test:
     sdk: flutter
