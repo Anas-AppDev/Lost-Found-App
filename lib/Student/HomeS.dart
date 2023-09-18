@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lostfound/Student/ClaimS.dart';
 import 'package:lostfound/Student/RequestItemS.dart';
 import 'package:lostfound/Student/RequestS.dart';
 import '../Authentication/Login.dart';
@@ -45,64 +46,74 @@ class _HomeSState extends State<HomeS> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index){
+                        var Name = snapshot.data!.docs[index]['iName'];
+                        var Type = snapshot.data!.docs[index]['iType'];
+                        var pid = snapshot.data!.docs[index].id;
                         var adminUid = snapshot.data!.docs[index]['uid'];
-                        return Card(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(snapshot.data!.docs[index]['iName']),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(snapshot.data!.docs[index]['iType']),
-                                    Text(snapshot.data!.docs[index]['iLoc']),
-                                    Text(snapshot.data!.docs[index]['date']),
-                                    Text(adminUid),
-                                  ],
+
+                        return InkWell(
+                          onTap: (){
+                            print(pid + " "+adminUid);
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimS(Name: Name, Type: Type, adminUid: adminUid, pid: pid,)));
+                          },
+                          child: Card(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(Name),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(Type),
+                                      Text(snapshot.data!.docs[index]['iLoc']),
+                                      Text(snapshot.data!.docs[index]['date']),
+                                      Text(adminUid),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              StreamBuilder(
-                                stream: firestore.doc('Users').collection('Admins').doc(adminUid).collection("profile").snapshots(),
-                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                StreamBuilder(
+                                  stream: firestore.doc('Users').collection('Admins').doc(adminUid).collection("profile").snapshots(),
+                                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
 
 
-                                  if (snapshot.hasError){
-                                    return Center(child: Text("Something went wrong"));
-                                  }
-                                  if (snapshot.connectionState == ConnectionState.waiting){
-                                    return Center(child: CupertinoActivityIndicator());
-                                  }
-                                  if (snapshot.data!.docs.isEmpty){
-                                    return Center(child: Text("No data found"));
-                                  }
+                                    if (snapshot.hasError){
+                                      return Center(child: Text("Something went wrong"));
+                                    }
+                                    if (snapshot.connectionState == ConnectionState.waiting){
+                                      return Center(child: CupertinoActivityIndicator());
+                                    }
+                                    if (snapshot.data!.docs.isEmpty){
+                                      return Center(child: Text("No data found"));
+                                    }
 
-                                  if (snapshot!=null && snapshot.data!=null){
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: snapshot.data!.docs.length,
-                                        itemBuilder: (context, index) {
-                                          return Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Text(snapshot.data!
-                                                  .docs[index]['name']),
-                                              Text(snapshot.data!
-                                                  .docs[index]['block']),
-                                              Text(snapshot.data!
-                                                  .docs[index]['cabin']),
-                                            ],
+                                    if (snapshot!=null && snapshot.data!=null){
+                                      return ListView.builder(
+                                          shrinkWrap: true,
+                                          physics: NeverScrollableScrollPhysics(),
+                                          itemCount: snapshot.data!.docs.length,
+                                          itemBuilder: (context, index) {
+                                            return Column(
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Text(snapshot.data!
+                                                    .docs[index]['name']),
+                                                Text(snapshot.data!
+                                                    .docs[index]['block']),
+                                                Text(snapshot.data!
+                                                    .docs[index]['cabin']),
+                                              ],
 
-                                          );
-                                        }
-                                    );
-                                  }
+                                            );
+                                          }
+                                      );
+                                    }
 
-                                  // print(snapshot.data!.docs[0]['b']);
-                                  return Container();
-                                },
-                              ),
-                            ],
+                                    // print(snapshot.data!.docs[0]['b']);
+                                    return Container();
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

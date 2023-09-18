@@ -4,21 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class RequestItemS extends StatefulWidget {
-  const RequestItemS({super.key});
+class ClaimS extends StatefulWidget {
+
+  String Name, Type, adminUid, pid;
+  ClaimS({super.key, required this.Name, required this.Type, required this.adminUid, required this.pid,});
 
   @override
-  State<RequestItemS> createState() => _RequestItemSState();
+  State<ClaimS> createState() => _ClaimSState();
 }
 
-class _RequestItemSState extends State<RequestItemS> {
+class _ClaimSState extends State<ClaimS> {
 
   var auth = FirebaseAuth.instance;
   var firestore = FirebaseFirestore.instance.collection("LostFound");
 
   var formKey = GlobalKey<FormState>();
 
-  var iNameCtrl = TextEditingController();
   var iDescCtrl = TextEditingController();
   var iUniqueCtrl = TextEditingController();
 
@@ -38,15 +39,6 @@ class _RequestItemSState extends State<RequestItemS> {
     'green',
   ];
 
-  String? typeListSelected = null;
-  var typesList = [
-    'gadget',
-    'furniture',
-    'clothes',
-    'keys',
-    'jewelery',
-  ];
-
   String? locListSelected = null;
   var locList = [
     'D1',
@@ -55,11 +47,6 @@ class _RequestItemSState extends State<RequestItemS> {
     'B4',
     'B6',
   ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,26 +61,21 @@ class _RequestItemSState extends State<RequestItemS> {
         child: Column(
           children: [
             SizedBox(height: 25,),
-            Text("Request a Item", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+            Text("Claim a Item", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
             SizedBox(height: 25,),
             Form(child: Column(
               children: [
-                TextFormField(
-                  keyboardType: TextInputType.text,
-                  controller: iNameCtrl,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Container(
+                  height: 40,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2,
                     ),
-                    hintText: "Enter Item Name",
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  maxLines: 1,
-                  validator: (value){
-                    if (value!.isEmpty){
-                      return "Item Name is required";
-                    }
-                    return null;
-                  },
+                  child: Text(widget.Name),
                 ),
                 SizedBox(height: 5,),
                 TextFormField(
@@ -114,20 +96,17 @@ class _RequestItemSState extends State<RequestItemS> {
                     return null;
                   },
                 ),
-                DropdownButton(
-                  value: typeListSelected,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: typesList.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      typeListSelected = newValue!;
-                    });
-                  },
+                Container(
+                  height: 40,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(widget.Type),
                 ),
                 DropdownButton(
                   value: colorListSelected,
@@ -276,26 +255,25 @@ class _RequestItemSState extends State<RequestItemS> {
             SizedBox(height: 40,),
             ElevatedButton(onPressed: (){
               if (formKey.currentState!.validate()){
-                var pid = DateTime.now().microsecondsSinceEpoch.toString();
 
-                firestore.doc("Requests").collection("Pending").doc(pid).set(
-                    {
+                DocumentReference docRef = firestore.doc('/Users/Admins/${widget.adminUid}/items/${widget.pid}');
+                CollectionReference collRef = docRef.collection("Claims");
 
-                      "iName": iNameCtrl.text,
-                      "iDesc": iDescCtrl.text,
-                      "iType": typeListSelected ?? "",
-                      "iColor": colorListSelected ?? "",
-                      "iLoc": locListSelected ?? "",
-                      "uid": auth.currentUser!.uid,
-                      "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
-                      "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
-                      "iImg": "Image link",
+                collRef.doc(auth.currentUser!.uid).set({
+                  "iName": widget.Name,
+                  "iDesc": iDescCtrl.text,
+                  "iType": widget.Type,
+                  "iColor": colorListSelected ?? "",
+                  "iLoc": locListSelected ?? "",
+                  "uid": auth.currentUser!.uid,
+                  "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
+                  "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
+                  "iImg": "Image link",
 
-                    }
-                );
+                });
+
               }
-
-            }, child: Text("Submit")),
+            }, child: Text("Claim")),
           ],
         ),
       ),
