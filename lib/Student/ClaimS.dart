@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ClaimS extends StatefulWidget {
@@ -47,6 +51,41 @@ class _ClaimSState extends State<ClaimS> {
     'B4',
     'B6',
   ];
+
+  String? downloadUrl;
+  File? imgFile;
+  void getImage({required ImageSource source}) async{
+    var pickedImg = await ImagePicker().pickImage(source: source);
+
+    if (pickedImg != null){
+      setState(() {
+        imgFile = File(pickedImg.path);
+        // print("PickedImg : " + pickedImg.path);
+      });
+
+    }
+    else{
+      print("Pick an image");
+    }
+  }
+
+  Future<void> uploadImageToFirebaseStorage(File file) async {
+    try {
+      var fstorage = FirebaseStorage.instance;
+      Reference storageReference = fstorage.ref().child('LostFound/${auth.currentUser!.uid}/${DateTime.now()}.jpg');
+
+      UploadTask uploadTask = storageReference.putFile(file);
+
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+
+      downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      print("Image uploaded. Download URL: $downloadUrl");
+
+    } catch (e) {
+      print("Error uploading image: $e");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -239,36 +278,48 @@ class _ClaimSState extends State<ClaimS> {
                   ],
                 ),
                 SizedBox(height: 20,),
-                Container(
-                  height: 200,
-                  width: 420,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black12,
+                InkWell(
+                  onTap: (){
+                    getImage(source: ImageSource.gallery);
+                  },
+                  child: Container(
+                    height: 200,
+                    width: 420,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.black12,
+                    ),
+                    child: (imgFile != null) ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12), // Adjust the radius to match your container
+                      child: Image.file(
+                        imgFile!.absolute,
+                        fit: BoxFit.cover, // Adjust the fit property here
+                      ),
+                    ) : Icon(CupertinoIcons.photo_fill),
                   ),
-                  child: Icon(CupertinoIcons.photo_fill),
                 ),
               ],
             ),
               key: formKey,),
 
             SizedBox(height: 40,),
-            ElevatedButton(onPressed: (){
+            ElevatedButton(onPressed: () async{
               if (formKey.currentState!.validate()){
+
+                imgFile!=null ? await uploadImageToFirebaseStorage(imgFile!) : print("img file : "+ imgFile.toString());
 
                 DocumentReference docRef = firestore.doc('/Users/Admins/${widget.adminUid}/items/${widget.pid}');
                 CollectionReference collRef = docRef.collection("Claims");
 
-                collRef.doc(auth.currentUser!.uid).set({
-                  "iName": widget.Name,
+                await collRef.doc(auth.currentUser!.uid).set({
                   "iDesc": iDescCtrl.text,
-                  "iType": widget.Type,
                   "iColor": colorListSelected ?? "",
                   "iLoc": locListSelected ?? "",
+                  "iUniq": iUniqueCtrl.text ?? "",
                   "uid": auth.currentUser!.uid,
                   "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
                   "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
-                  "iImg": "Image link",
+                  "iImg": downloadUrl ?? "",
 
                 });
 

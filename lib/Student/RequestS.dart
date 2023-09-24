@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lostfound/Student/DetailsOfRequestS.dart';
 
 class RequestS extends StatefulWidget {
   const RequestS({super.key});
@@ -52,22 +53,20 @@ class _RequestSState extends State<RequestS> {
                       // DocumentSnapshot document = snapshot.data!.docs[index];
                       // Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-                      return Card(
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: Text(snapshot.data!.docs[index]['iName']),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(snapshot.data!.docs[index]['iType']),
-                                  Text(snapshot.data!.docs[index]['iLoc']),
-                                  Text(snapshot.data!.docs[index]['lostDate']),
-                                  Text(snapshot.data!.docs[index]['lostTime']),
-                                ],
+                      var pid = snapshot.data!.docs[index].id;
+                      return InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailsOfRequestS(pid: pid,)));
+                        },
+                        child: Card(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: Text(snapshot.data!.docs[index]['iName']),
+                                subtitle: Text(snapshot.data!.docs[index]['iReqDate']),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

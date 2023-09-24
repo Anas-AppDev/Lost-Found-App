@@ -2,21 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lostfound/Admin/DetailsOfRequestA.dart';
+import 'package:lostfound/Admin/ClaimA2.dart';
 
-class RequestA extends StatefulWidget {
-  const RequestA({super.key});
+class ClaimA extends StatefulWidget {
+
+  String pid, iName, iType;
+  ClaimA({super.key, required this.pid, required this.iName, required this.iType});
 
   @override
-  State<RequestA> createState() => _RequestAState();
+  State<ClaimA> createState() => _ClaimAState();
 }
 
-class _RequestAState extends State<RequestA> {
+class _ClaimAState extends State<ClaimA> {
 
-  var firestore = FirebaseFirestore.instance.collection("LostFound");
   var auth = FirebaseAuth.instance;
+  var firestore = FirebaseFirestore.instance.collection("LostFound");
 
-  //
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +31,9 @@ class _RequestAState extends State<RequestA> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20,),
-            Text("Pending Requests"),
+
             StreamBuilder(
-              // stream: firestore.doc("Requests").collection("Pending").doc(auth.currentUser!.uid).collection("items").snapshots(),
-              stream: firestore.doc("Requests").collection("Pending").snapshots(),
+              stream: firestore.doc("Users").collection("Admins/${auth.currentUser!.uid}/items/${widget.pid}/Claims").snapshots(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                 if (snapshot.hasError){
                   return Center(child: Text("Something went wrong"));
@@ -52,18 +51,14 @@ class _RequestAState extends State<RequestA> {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index){
-                      var studUid = snapshot.data!.docs[index]['uid'];
-                      var pid = snapshot.data!.docs[index].id;
+                      var studUid = snapshot.data!.docs[index]["uid"];
                       return InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailsOfRequestA(pid: pid)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimA2(pid: widget.pid, studUid: studUid, iName: widget.iName, iType: widget.iType,)));
                         },
                         child: Card(
                           child: Column(
                             children: [
-                              ListTile(
-                                title: Text(snapshot.data!.docs[index]['iName']),
-                              ),
                               StreamBuilder(
                                 stream: firestore.doc('Users').collection('Students').doc(studUid).collection("profile").snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -82,26 +77,31 @@ class _RequestAState extends State<RequestA> {
                                   if (snapshot!=null && snapshot.data!=null){
                                     return ListView.builder(
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
                                         itemCount: snapshot.data!.docs.length,
                                         itemBuilder: (context, index) {
                                           return Column(
                                             crossAxisAlignment: CrossAxisAlignment.end,
                                             children: [
-                                              Text(snapshot.data!
-                                                  .docs[index]['name']),
-                                              Text(snapshot.data!
-                                                  .docs[index]['uid']),
+                                              Row(
+                                                children: [
+                                                  Text(snapshot.data!
+                                                      .docs[index]['name']),
+                                                  SizedBox(width: 10,),
+                                                  Text(snapshot.data!
+                                                      .docs[index]['uid']),
+                                                ],
+                                              ),
                                             ],
 
                                           );
                                         }
                                     );
                                   }
-
-                                  // print(snapshot.data!.docs[0]['b']);
                                   return Container();
                                 },
+                              ),
+                              ListTile(
+                                title: Text(snapshot.data!.docs[index]['iDesc']),
                               ),
                             ],
                           ),
@@ -113,7 +113,6 @@ class _RequestAState extends State<RequestA> {
                 return Container();
               },
             ),
-
           ],
         ),
       ),
