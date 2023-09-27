@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:lostfound/Student/RequestS.dart';
 
 class ClaimS extends StatefulWidget {
 
@@ -308,21 +309,64 @@ class _ClaimSState extends State<ClaimS> {
 
                 imgFile!=null ? await uploadImageToFirebaseStorage(imgFile!) : print("img file : "+ imgFile.toString());
 
-                DocumentReference docRef = firestore.doc('/Users/Admins/${widget.adminUid}/items/${widget.pid}');
-                CollectionReference collRef = docRef.collection("Claims");
+                // DocumentReference docRef = firestore.doc('/Users/Admins/${widget.adminUid}/items/${widget.pid}');
+                // CollectionReference collRef = docRef.collection("Claims");
+                //
+                // await collRef.doc(auth.currentUser!.uid).set({
+                //   "iDesc": iDescCtrl.text,
+                //   "iColor": colorListSelected ?? "",
+                //   "iLoc": locListSelected ?? "",
+                //   "iUniq": iUniqueCtrl.text ?? "",
+                //   "uid": auth.currentUser!.uid,
+                //   "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
+                //   "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
+                //   "iImg": downloadUrl ?? "",
+                //
+                // });
 
-                await collRef.doc(auth.currentUser!.uid).set({
-                  "iDesc": iDescCtrl.text,
-                  "iColor": colorListSelected ?? "",
-                  "iLoc": locListSelected ?? "",
-                  "iUniq": iUniqueCtrl.text ?? "",
-                  "uid": auth.currentUser!.uid,
-                  "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
-                  "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
-                  "iImg": downloadUrl ?? "",
+                // var pid = DateTime.now().microsecondsSinceEpoch.toString();
 
-                });
+                await firestore.doc("Inventory").collection("items").doc(widget.pid).collection("Claims Pending").doc(auth.currentUser!.uid).set(
+                    {
 
+                      "iName": widget.Name,
+                      "iDesc": iDescCtrl.text,
+                      "iType": widget.Type,
+                      "iColor": colorListSelected ?? "",
+                      "iLoc": locListSelected ?? "",
+                      "iUniq": iUniqueCtrl.text ?? "",
+                      "studUid": auth.currentUser!.uid,
+                      "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
+                      "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
+                      "iImg": downloadUrl ?? "",
+                      "iReqDate": DateFormat('d MMMM y').format(DateTime.now()),
+                      "pid": widget.pid,
+                      "adminUid": widget.adminUid ?? "",
+
+                    }
+                );
+
+                await firestore.doc("Stud Requests").collection("Claims Pending").doc(widget.pid+"_"+auth.currentUser!.uid).set(
+                    {
+
+                      "iName": widget.Name,
+                      "iDesc": iDescCtrl.text,
+                      "iType": widget.Type,
+                      "iColor": colorListSelected ?? "",
+                      "iLoc": locListSelected ?? "",
+                      "iUniq": iUniqueCtrl.text ?? "",
+                      "studUid": auth.currentUser!.uid,
+                      "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
+                      "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
+                      "iImg": downloadUrl ?? "",
+                      "iReqDate": DateFormat('d MMMM y').format(DateTime.now()),
+                      "pid": widget.pid,
+                      "adminUid": widget.adminUid ?? "",
+
+                    }
+                );
+
+                // Navigator.push(context, MaterialPageRoute(builder: (context)=> RequestS(adminUid: widget.adminUid,)));
               }
             }, child: Text("Claim")),
           ],

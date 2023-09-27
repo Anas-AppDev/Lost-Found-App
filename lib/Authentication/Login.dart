@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lostfound/Authentication/Forgot.dart';
 import 'package:lostfound/Authentication/SignupA.dart';
+import 'package:lostfound/Student/HomeS.dart';
 import '../Admin/HomeA.dart';
-import '../Student/HomeS.dart';
 import 'SignupS.dart';
 import '../ToastUtil.dart';
 

@@ -117,25 +117,25 @@ class _AddItemPageState extends State<AddItemPage> {
                 pid = DateTime.now().microsecondsSinceEpoch.toString();
                 currDate = DateFormat('d MMMM y').format(DateTime.now());
                 
-                firestore.doc("Users").collection("Admins").doc(auth.currentUser!.uid).collection("items").doc(pid).set(
-                  {
-
-                      "iName": iCtrl.text,
-                      "iType": typeListSelected,
-                      "iLoc": locListSelected,
-                      "uid": auth.currentUser!.uid,
-                      "date": currDate,
-
-                  }
-                );
+                // firestore.doc("Users").collection("Admins").doc(auth.currentUser!.uid).collection("items").doc(pid).set(
+                //   {
+                //
+                //       "iName": iCtrl.text,
+                //       "iType": typeListSelected,
+                //       "iLoc": locListSelected,
+                //       "adminUid": auth.currentUser!.uid,
+                //       "foundDate": currDate,
+                //
+                //   }
+                // );
 
                 firestore.doc("Inventory").collection("items").doc(pid).set(
                   {
                     "iName": iCtrl.text,
                     "iType": typeListSelected,
                     "iLoc": locListSelected,
-                    "uid": auth.currentUser!.uid,
-                    "date": currDate,
+                    "adminUid": auth.currentUser!.uid,
+                    "foundDate": currDate,
                   }
                 );
 

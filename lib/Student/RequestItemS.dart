@@ -332,7 +332,7 @@ class _RequestItemSState extends State<RequestItemS> {
 
                 var pid = DateTime.now().microsecondsSinceEpoch.toString();
 
-                await firestore.doc("Requests").collection("Pending").doc(pid).set(
+                await firestore.doc("Stud Requests").collection("Pending Requests").doc(pid).set(
                     {
 
                       "iName": iNameCtrl.text,
@@ -341,15 +341,17 @@ class _RequestItemSState extends State<RequestItemS> {
                       "iColor": colorListSelected ?? "",
                       "iLoc": locListSelected ?? "",
                       "iUniq": iUniqueCtrl.text ?? "",
-                      "uid": auth.currentUser!.uid,
+                      "studUid": auth.currentUser!.uid,
                       "lostDate": lostDate != null ? DateFormat('d MMMM y').format(lostDate!) : '',
                       "lostTime": lostTime != null ? DateFormat.jm().format(lostTime!) : '',
                       "iImg": downloadUrl ?? "",
                       "iReqDate": DateFormat('d MMMM y').format(DateTime.now()),
                       "pid": pid,
+                      "adminUid": "",
 
                     }
                 );
+
               }
 
             }, child: Text("Submit")),

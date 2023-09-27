@@ -31,7 +31,7 @@ class _ClaimA2State extends State<ClaimA2> {
           children: [
 
             StreamBuilder(
-              stream: firestore.doc("Users").collection("Admins/${auth.currentUser!.uid}/items/${widget.pid}/Claims").snapshots(),
+              stream: firestore.doc("Inventory").collection("items").doc(widget.pid).collection("Claims Pending").where("studUid", isEqualTo: widget.studUid).snapshots(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                 if (snapshot.hasError){
                   return Center(child: Text("Something went wrong"));

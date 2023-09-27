@@ -39,9 +39,8 @@ class _HomeAState extends State<HomeA> {
               Navigator.push(context, MaterialPageRoute(builder: (context)=> AddItemPage()));
             }, child: Icon(CupertinoIcons.add)),
             Text("Space for teacher specific inventory"),
-
             StreamBuilder(
-              stream: firestore.doc('Users').collection('Admins').doc(auth.currentUser!.uid).collection("items").snapshots(),
+              stream: firestore.doc("Inventory").collection("items").where("adminUid", isEqualTo: auth.currentUser!.uid).snapshots(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
 
 
@@ -71,6 +70,46 @@ class _HomeAState extends State<HomeA> {
                           print(iType);
                           Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimA(pid: pid, iName: iName, iType: iType,)));
                         },
+                        onLongPress: (){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context){
+                              return CupertinoAlertDialog(
+                                title: Text("Remove Item"),
+                                content: Column(
+                                  children: [
+                                    SizedBox(height: 10,),
+                                    Container(
+                                      height: 88,
+                                      width: 88,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(18),
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                    Text("Are you sure you want to remove this item ?"),
+                                  ],
+                                ),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    onPressed: (){
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("No"),
+                                  ),
+                                  CupertinoDialogAction(
+                                    onPressed: (){
+                                      firestore.doc("Inventory").collection("items").doc(pid).delete();
+                                      firestore.doc("Stud Requests").collection("Claims Pending").doc(pid).delete();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Yes"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         child: Card(
                           child: Column(
                             children: [
@@ -81,13 +120,13 @@ class _HomeAState extends State<HomeA> {
                                   children: [
                                     Text(iType),
                                     Text(snapshot.data!.docs[index]['iLoc']),
-                                    Text(snapshot.data!.docs[index]['date']),
-                                    Text(snapshot.data!.docs[index]['uid']),
+                                    Text(snapshot.data!.docs[index]['foundDate']),
+                                    Text(snapshot.data!.docs[index]['adminUid']),
                                   ],
                                 ),
                               ),
                               StreamBuilder(
-                                stream: firestore.doc('Users').collection('Admins').doc(auth.currentUser!.uid).collection("profile").snapshots(),
+                                stream: firestore.doc('Users').collection('Admins').where("adminUid", isEqualTo: auth.currentUser!.uid).snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
 
 
@@ -116,6 +155,8 @@ class _HomeAState extends State<HomeA> {
                                                 .docs[index]['block']),
                                             Text(snapshot.data!
                                                 .docs[index]['cabin']),
+                                            Text(snapshot.data!
+                                                .docs[index]['uniEid']),
                                           ],
 
                                         );

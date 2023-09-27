@@ -49,7 +49,7 @@ class _HomeSState extends State<HomeS> {
                         var Name = snapshot.data!.docs[index]['iName'];
                         var Type = snapshot.data!.docs[index]['iType'];
                         var pid = snapshot.data!.docs[index].id;
-                        var adminUid = snapshot.data!.docs[index]['uid'];
+                        var adminUid = snapshot.data!.docs[index]['adminUid'];
 
                         return InkWell(
                           onTap: (){
@@ -66,13 +66,13 @@ class _HomeSState extends State<HomeS> {
                                     children: [
                                       Text(Type),
                                       Text(snapshot.data!.docs[index]['iLoc']),
-                                      Text(snapshot.data!.docs[index]['date']),
+                                      Text(snapshot.data!.docs[index]['foundDate']),
                                       Text(adminUid),
                                     ],
                                   ),
                                 ),
                                 StreamBuilder(
-                                  stream: firestore.doc('Users').collection('Admins').doc(adminUid).collection("profile").snapshots(),
+                                  stream: firestore.doc('Users').collection('Admins').snapshots(),
                                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
 
 

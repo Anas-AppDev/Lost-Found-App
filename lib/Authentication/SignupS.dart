@@ -155,10 +155,11 @@ class _SignupSState extends State<SignupS> {
                           if (auth.currentUser!.emailVerified){
 
                             firestore.doc('VerifiedUsers').collection("Students").add({auth.currentUser!.uid : auth.currentUser!.email.toString()});
-                            firestore.doc("Users").collection("Students").doc(auth.currentUser!.uid).collection("profile").doc(auth.currentUser!.uid).set(
+                            firestore.doc("Users").collection("Students").doc(auth.currentUser!.uid).set(
                                 {
                                   "name": nameCtrl.text,
-                                  "uid": cumailCtrl.text.split("@")[0],
+                                  "uniUid": cumailCtrl.text.split("@")[0],
+                                  "studUid": auth.currentUser!.uid,
                                 }
                             );
 

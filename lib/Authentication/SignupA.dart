@@ -199,12 +199,13 @@ class _SignupAState extends State<SignupA> {
                           if (auth.currentUser!.emailVerified){
 
                             firestore.doc('VerifiedUsers').collection("Admins").add({auth.currentUser!.uid : auth.currentUser!.email.toString()});
-                            firestore.doc("Users").collection("Admins").doc(auth.currentUser!.uid).collection("profile").doc(auth.currentUser!.uid).set(
+                            firestore.doc("Users").collection("Admins").doc(auth.currentUser!.uid).set(
                                 {
                                   "name": nameCtrl.text,
                                   "block": blockListSelected,
                                   "cabin": cabinCtrl.text,
-                                  "eid": cumailCtrl.text.split("@")[0],
+                                  "uniEid": cumailCtrl.text.split("@")[0],
+                                  "adminUid": auth.currentUser!.uid,
                                 }
                             );
 
