@@ -146,6 +146,12 @@ class _HomeAState extends State<HomeA> {
                                       physics: NeverScrollableScrollPhysics(),
                                       itemCount: snapshot.data!.docs.length,
                                       itemBuilder: (context, index) {
+
+                                        print(snapshot.data!.docs[index]['name']);
+                                        print(snapshot.data!.docs[index]['block']);
+                                        print(snapshot.data!.docs[index]['cabin']);
+                                        print(snapshot.data!.docs[index]['uniEid']);
+
                                         return Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: [

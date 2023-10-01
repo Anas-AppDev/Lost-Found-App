@@ -34,6 +34,11 @@ class _NavDrawerA2State extends State<NavDrawerA2> {
   var auth = FirebaseAuth.instance;
   var firestore = FirebaseFirestore.instance.collection("LostFound");
 
+  var AdminName;
+  var AdminEid;
+  var AdminCabin;
+  var AdminBlock;
+
   double NavValue = 0;
 
   List<Widget> pagesList = [
@@ -76,6 +81,46 @@ class _NavDrawerA2State extends State<NavDrawerA2> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+
+                  StreamBuilder(
+                    stream: firestore.doc('Users').collection('Admins').where("adminUid", isEqualTo: auth.currentUser!.uid).snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+
+
+                      if (snapshot.hasError){
+                        return Center(child: Text("Something went wrong"));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting){
+                        return Center(child: CupertinoActivityIndicator());
+                      }
+                      if (snapshot.data!.docs.isEmpty){
+                        return Center(child: Text("No data found"));
+                      }
+
+                      if (snapshot!=null && snapshot.data!=null){
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+
+                                AdminName = (snapshot.data!.docs[index]['name']);
+                                AdminEid = (snapshot.data!.docs[index]['uniEid']);
+                                AdminCabin = (snapshot.data!.docs[index]['cabin']);
+                                AdminBlock = (snapshot.data!.docs[index]['block']);
+
+
+                              return Container();
+                            }
+                        );
+                      }
+
+                      // print(snapshot.data!.docs[0]['b']);
+                      return Container();
+                    },
+                  ),
+
+
                   DrawerHeader(
                       decoration: BoxDecoration(
                         border: Border(bottom: BorderSide(color: Colors.white)),

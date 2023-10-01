@@ -13,6 +13,7 @@ import 'package:lostfound/Authentication/SignupA2.dart';
 import 'package:lostfound/Authentication/SignupS.dart';
 import 'package:lostfound/Authentication/SignupS2.dart';
 import 'package:lostfound/Student/HomeS.dart';
+import 'package:lostfound/Student/NavDrawerS2.dart';
 import 'package:lostfound/ToastUtil.dart';
 
 class Login2 extends StatefulWidget {
@@ -172,7 +173,7 @@ class _Login2State extends State<Login2> {
                               .where(auth.currentUser!.uid, isEqualTo: cumailCtrl.text.toLowerCase())
                               .get();
                           if (querySnapshot.docs.isNotEmpty) {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeS()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => NavDrawerS2()));
                           } else {
                             querySnapshot = await firestore.doc("VerifiedUsers").collection("Admins")
                                 .where(auth.currentUser!.uid, isEqualTo: cumailCtrl.text.toLowerCase())

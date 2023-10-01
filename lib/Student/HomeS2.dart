@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ import 'package:lostfound/Authentication/SignupS2.dart';
 import 'package:lostfound/Authentication/SplashPage.dart';
 import 'package:lostfound/Student/ClaimS2.dart';
 import 'package:lostfound/Student/HomeS2.dart';
+import 'package:lostfound/Student/RequestItemS2.dart';
 import 'package:lostfound/Student/RequestS2.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 
@@ -30,6 +32,7 @@ class _HomeS2State extends State<HomeS2> {
   var searchCtrl = TextEditingController();
 
   var auth = FirebaseAuth.instance;
+  var firestore = FirebaseFirestore.instance.collection("LostFound");
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +112,7 @@ class _HomeS2State extends State<HomeS2> {
                       SizedBox(width: 125,),
                       InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimS2()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> RequestItemS2()));
                         },
                         child: Container(
                           height: 40,
@@ -125,69 +128,134 @@ class _HomeS2State extends State<HomeS2> {
                   ),
 
                   SizedBox(height: 20,),
-                  InkWell(
-                    // onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimA1())),
-                    child: Container(
-                      height: 180,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: ShapeDecoration(
-                        shape: SmoothRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          smoothness: 1,
-                        ),
-                        color: Colors.amber,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF3E2445).withOpacity(0.6),
-                              spreadRadius: -20,
-                              blurRadius: 20,
-                              offset: Offset(0, 30),
-                            ),
-                          ],
-                        ),
-                        child: Stack(
-                          children: [
-                            SmoothClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              smoothness: 1,
-                              child: Image.network(
-                                imgLink,
-                                fit: BoxFit.cover,
-                                height: MediaQuery.of(context).size.height,
+
+                  StreamBuilder(
+                    stream: firestore.doc("Inventory").collection("items").snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                      if (snapshot.hasError){
+                        return Center(child: Text("Something went wrong"));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting){
+                        return Center(child: CupertinoActivityIndicator());
+                      }
+                      if (snapshot.data!.docs.isEmpty){
+                        return Center(child: Text("No data found"));
+                      }
+
+                      if (snapshot!=null && snapshot.data!=null){
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index){
+                            var iName = snapshot.data!.docs[index]['iName'];
+                            var iType = snapshot.data!.docs[index]['iType'];
+                            var pid = snapshot.data!.docs[index].id;
+                            var adminUid = snapshot.data!.docs[index]['adminUid'];
+
+                            return InkWell(
+                              onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ClaimS2(iName: iName, iType: iType, adminUid: adminUid, pid: pid,))),
+                              child: Container(
+                                height: 180,
+                                margin: EdgeInsets.only(bottom: 20),
                                 width: MediaQuery.of(context).size.width,
-                              ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(width: 25,),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Admin Name", style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.normal, color: Colors.white, fontSize: 12, height: 1.2),),
-                                        Container(
-                                            width: 290,
-                                            child: Text("Item Name", style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24, height: 1.2),)),
-                                        SizedBox(height: 26,),
-                                        Text("B3", style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 32, height: 1),),
-                                        Text("318", style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.normal, color: Colors.white, fontSize: 12, letterSpacing: 6, height: 1.2),),
-                                      ],
-                                    )
-                                  ],
+                                decoration: ShapeDecoration(
+                                  shape: SmoothRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    smoothness: 1,
+                                  ),
+                                  color: Colors.amber,
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xFF3E2445).withOpacity(0.6),
+                                        spreadRadius: -20,
+                                        blurRadius: 20,
+                                        offset: Offset(0, 30),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      SmoothClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        smoothness: 1,
+                                        child: Image.network(
+                                          imgLink,
+                                          fit: BoxFit.cover,
+                                          height: MediaQuery.of(context).size.height,
+                                          width: MediaQuery.of(context).size.width,
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          StreamBuilder(
+                                            stream: firestore.doc('Users').collection('Admins').snapshots(),
+                                            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+
+
+                                              if (snapshot.hasError){
+                                                return Center(child: Text("Something went wrong"));
+                                              }
+                                              if (snapshot.connectionState == ConnectionState.waiting){
+                                                return Center(child: CupertinoActivityIndicator());
+                                              }
+                                              if (snapshot.data!.docs.isEmpty){
+                                                return Center(child: Text("No data found"));
+                                              }
+
+                                              if (snapshot!=null && snapshot.data!=null){
+                                                return ListView.builder(
+                                                    shrinkWrap: true,
+                                                    physics: NeverScrollableScrollPhysics(),
+                                                    itemCount: snapshot.data!.docs.length,
+                                                    itemBuilder: (context, index) {
+                                                      return Row(
+                                                        children: [
+                                                          SizedBox(width: 25,),
+                                                          
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(snapshot.data!.docs[index]['name'], style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.normal, color: Colors.white, fontSize: 12, height: 1.2),),
+                                                              Container(
+                                                                  width: 290,
+                                                                  child: Text(iName, style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24, height: 1.2),)),
+                                                              SizedBox(height: 26,),
+                                                              Text(snapshot.data!.docs[index]['block'], style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 32, height: 1),),
+                                                              Text(snapshot.data!.docs[index]['cabin'], style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.normal, color: Colors.white, fontSize: 12, letterSpacing: 6, height: 1.2),),
+                                                            ],
+                                                          ),
+
+                                                        ],
+                                                      );
+                                                    }
+                                                );
+                                              }
+
+                                              // print(snapshot.data!.docs[0]['b']);
+                                              return Container();
+                                            },
+                                          ),
+
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return Container();
+                    },
                   ),
+
 
 
 
