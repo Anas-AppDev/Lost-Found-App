@@ -45,161 +45,170 @@ class _LoginState extends State<Login> {
       },
 
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 40,),
-                  Text("LOGIN"),
-                  SizedBox(
-                    height: 20,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
+                width: double.infinity,
+                height: 630,
+                margin: EdgeInsets.only(top: 230),
+                decoration: BoxDecoration(
+                  color: Color(0xffFFFFFF),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50.0),
+                    topRight: Radius.circular(50.0),
                   ),
-                  Form(
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          controller: cumailCtrl,
-                          decoration: InputDecoration(
-                            hintText: "Enter your CU Mail",
-                            prefixIcon: Icon(CupertinoIcons.mail),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          maxLines: 1,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Enter CU Mail Id";
-                            }
-                            if (!(value.endsWith("@gmail.com") || value.endsWith('@cuchd.in'))) {
-                              return "Enter CU Mail Id only";
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          controller: passCtrl,
-                          decoration: InputDecoration(
-                            hintText: "Enter password",
-                            prefixIcon: Icon(CupertinoIcons.lock),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          maxLength: 15,
-                          maxLines: 1,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Enter Password (6-digit)";
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 40,),
+                    Text("LOGIN"),
+                    SizedBox(
+                      height: 20,
                     ),
-                    key: formKey,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          try {
-                            // Sign in the user with email and password
-                            final userCredential =
-                                await auth.signInWithEmailAndPassword(
-                              email: cumailCtrl.text.trim().toLowerCase(),
-                              password: passCtrl.text.trim(),
-                            );
+                    Form(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            controller: cumailCtrl,
+                            decoration: InputDecoration(
+                              hintText: "Enter your CU Mail",
+                              prefixIcon: Icon(CupertinoIcons.mail),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            maxLines: 1,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Enter CU Mail Id";
+                              }
+                              if (!(value.endsWith("@gmail.com") || value.endsWith('@cuchd.in'))) {
+                                return "Enter CU Mail Id only";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            controller: passCtrl,
+                            decoration: InputDecoration(
+                              hintText: "Enter password",
+                              prefixIcon: Icon(CupertinoIcons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            maxLength: 15,
+                            maxLines: 1,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Enter Password (6-digit)";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                      key: formKey,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            try {
+                              // Sign in the user with email and password
+                              final userCredential =
+                              await auth.signInWithEmailAndPassword(
+                                email: cumailCtrl.text.trim().toLowerCase(),
+                                password: passCtrl.text.trim(),
+                              );
 
 
-                            QuerySnapshot querySnapshot = await firestore.doc("VerifiedUsers").collection("Students")
-                                .where(auth.currentUser!.uid, isEqualTo: cumailCtrl.text.toLowerCase())
-                                .get();
-
-                            if (querySnapshot.docs.isNotEmpty) {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomeS()));
-                            } else {
-                              querySnapshot = await firestore.doc("VerifiedUsers").collection("Admins")
+                              QuerySnapshot querySnapshot = await firestore.doc("VerifiedUsers").collection("Students")
                                   .where(auth.currentUser!.uid, isEqualTo: cumailCtrl.text.toLowerCase())
                                   .get();
 
-                              if (querySnapshot.docs.isNotEmpty){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeA()));
-                              }
-                              else{
-                                ToastUtil().toast("Email not verified");
+                              if (querySnapshot.docs.isNotEmpty) {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeS()));
+                              } else {
+                                querySnapshot = await firestore.doc("VerifiedUsers").collection("Admins")
+                                    .where(auth.currentUser!.uid, isEqualTo: cumailCtrl.text.toLowerCase())
+                                    .get();
+
+                                if (querySnapshot.docs.isNotEmpty){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomeA()));
+                                }
+                                else{
+                                  ToastUtil().toast("Email not verified");
+                                }
+
                               }
 
+
+
+                            } catch (e) {
+                              // Handle login errors, e.g., invalid email or password
+                              ToastUtil().toast("Login failed: $e");
                             }
-
-
-
-                          } catch (e) {
-                            // Handle login errors, e.g., invalid email or password
-                            ToastUtil().toast("Login failed: $e");
                           }
-                        }
-                      },
-                      child: Text("Login")),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> Forgot()));
+                        },
+                        child: Text("Login")),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> Forgot()));
 
-                      },
-                      child: Text("Forgot Pass?")),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Don't have an account? "),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignupA()));
-                          },
-                          child: Text("Signup Admin")),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Don't have an account? "),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignupS()));
-                          },
-                          child: Text("Signup Student")),
-                    ],
-                  ),
-                ],
+                        },
+                        child: Text("Forgot Pass?")),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account? "),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignupA()));
+                            },
+                            child: Text("Signup Admin")),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account? "),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignupS()));
+                            },
+                            child: Text("Signup Student")),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),

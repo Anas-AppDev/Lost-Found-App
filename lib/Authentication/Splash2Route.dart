@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lostfound/Authentication/Login.dart';
+import 'package:lostfound/Authentication/Login2.dart';
 import '../Admin/HomeA.dart';
 import '../Student/HomeS.dart';
 
@@ -19,7 +20,7 @@ class Splash2Route{
       }
       else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Login()));
+            context, MaterialPageRoute(builder: (context) => Login2()));
       }
     });
   }

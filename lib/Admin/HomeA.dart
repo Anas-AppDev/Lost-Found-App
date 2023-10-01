@@ -149,8 +149,7 @@ class _HomeAState extends State<HomeA> {
                                         return Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: [
-                                            Text(snapshot.data!
-                                                .docs[index]['name']),
+                                            Text(snapshot.data!.docs[index]['name']),
                                             Text(snapshot.data!
                                                 .docs[index]['block']),
                                             Text(snapshot.data!

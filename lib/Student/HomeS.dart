@@ -6,6 +6,7 @@ import 'package:lostfound/Student/ClaimS.dart';
 import 'package:lostfound/Student/RequestItemS.dart';
 import 'package:lostfound/Student/RequestS.dart';
 import '../Authentication/Login.dart';
+import '../Authentication/Login2.dart';
 
 class HomeS extends StatefulWidget {
   const HomeS({super.key});
@@ -133,7 +134,7 @@ class _HomeSState extends State<HomeS> {
                 children: [
                   ElevatedButton(onPressed: (){
                     auth.signOut();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login2()));
                   }, child: Text("Log out")),
                   SizedBox(width: 20,),
                   ElevatedButton(onPressed: (){
